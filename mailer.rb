@@ -11,7 +11,7 @@ post '/stripe-webhook-url' do
 
   puts "Received event with ID: #{data[:id]} Type: #{data[:type]}"
 
-  # Retrieving the event from the Stripe API guarantees its authenticity  
+  # Retrieving the event from the Stripe API guarantees its authenticity
   event = Stripe::Event.retrieve(data[:id])
 
   # This will send receipts on succesful invoices
@@ -27,12 +27,12 @@ def email_invoice_receipt(invoice)
   customer = Stripe::Customer.retrieve(invoice.customer)
 
   # Make sure to customize your from address
-  from_address = "MyApp Support <support@myapp.com>"
+  from_address = "Plivo stripe webhook <no-reply@plivo.com>"
   subject = "Your payment has been received"
 
   Pony.mail(
     :from => from_address,
-    :to => customer.email,
+    :to => 'rohit@plivo.com',
     :subject => subject,
     :body => payment_received_body(invoice, customer),
     :via => :smtp,
@@ -54,7 +54,7 @@ def payment_received_body(invoice, customer)
   <<EOF
 Dear #{customer.email}:
 
-This is a receipt for your subscription. This is only a receipt, 
+This is a receipt for your subscription. This is only a receipt,
 no payment is due. Thanks for your continued support!
 
 -------------------------------------------------
@@ -74,7 +74,7 @@ end
 # You can customize this for whatever email provider you want to use,
 # like Mailgun, SendGrid, or even Gmail. These settings are for Mailgun
 def default_email_options
-  { 
+  {
     :address              => ENV['MAILGUN_SMTP_SERVER'],
     :port                 => ENV['MAILGUN_SMTP_PORT'],
     :enable_starttls_auto => true,
